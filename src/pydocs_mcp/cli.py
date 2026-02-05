@@ -15,9 +15,16 @@ from .storage import SQLiteStore
 app = typer.Typer(add_completion=False, help="Offline Python/ML docs MCP server")
 
 
+def _expand_path(path: Path | None) -> Path | None:
+    if path is None:
+        return None
+    return path.expanduser()
+
+
 @app.command()
 def sources(config: Path | None = typer.Option(None, "--config", "-c")) -> None:
     """List configured documentation sources."""
+    config = _expand_path(config)
     payload = [source.__dict__ for source in load_sources(config)]
     typer.echo(json.dumps(payload, indent=2))
 
@@ -31,6 +38,8 @@ def index(
 ) -> None:
     """Fetch documentation and build the local index."""
     configure_logging(verbose)
+    config = _expand_path(config)
+    db = _expand_path(db) or db
     ensure_app_dirs([db.parent, DEFAULT_SNAPSHOT_DIR])
 
     sources = load_sources(config)
@@ -46,6 +55,7 @@ def search(
     source: str | None = typer.Option(None, "--source"),
 ) -> None:
     """Search the local index."""
+    db = _expand_path(db) or db
     results = search_docs(db_path=db, query=query, limit=limit, source=source)
     typer.echo(json.dumps(results, indent=2))
 
@@ -57,6 +67,7 @@ def read(
     db: Path = typer.Option(DEFAULT_DB_PATH, "--db"),
 ) -> None:
     """Read a document by id or url."""
+    db = _expand_path(db) or db
     if doc_id is None and url is None:
         raise typer.BadParameter("Provide --id or --url")
     record = read_doc(db_path=db, doc_id=doc_id, url=url)
@@ -68,6 +79,7 @@ def read(
 @app.command()
 def stats(db: Path = typer.Option(DEFAULT_DB_PATH, "--db")) -> None:
     """Show index statistics."""
+    db = _expand_path(db) or db
     store = SQLiteStore(db)
     store.init_db()
     typer.echo(json.dumps(store.stats(), indent=2))
@@ -76,6 +88,8 @@ def stats(db: Path = typer.Option(DEFAULT_DB_PATH, "--db")) -> None:
 @app.command()
 def serve(db: Path = typer.Option(DEFAULT_DB_PATH, "--db")) -> None:
     """Run MCP server over stdio (offline)."""
+    db = _expand_path(db) or db
     ensure_app_dirs([db.parent])
+    typer.echo(f"Starting MCP server with database at {db}", err=True)
     server = create_server(db)
     server.run(transport="stdio")
