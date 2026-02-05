@@ -1,0 +1,8 @@
+{
+  "servers": {
+    "pydocs": {
+      "command": "uv",
+      "args": ["run", "pydocs-mcp", "serve", "--db", "${env:HOME}/.pydocs_mcp/docs.db"]
+    }
+  }
+}

@@ -1,0 +1,53 @@
+sources:
+  - name: python
+    start_urls:
+      - https://docs.python.org/3/
+    allowed_domains:
+      - docs.python.org
+    include_patterns:
+      - '^https://docs\.python\.org/3/'
+    exclude_patterns:
+      - '/_sources/'
+      - '/genindex.html'
+      - '/search.html'
+    max_pages: 2000
+    crawl_delay_seconds: 0.3
+
+  - name: numpy
+    start_urls:
+      - https://numpy.org/doc/stable/
+    allowed_domains:
+      - numpy.org
+    include_patterns:
+      - '^https://numpy\.org/doc/stable/'
+    exclude_patterns:
+      - '/_sources/'
+      - '/search.html'
+    max_pages: 2000
+    crawl_delay_seconds: 0.3
+
+  - name: pandas
+    start_urls:
+      - https://pandas.pydata.org/docs/
+    allowed_domains:
+      - pandas.pydata.org
+    include_patterns:
+      - '^https://pandas\.pydata\.org/docs/'
+    exclude_patterns:
+      - '/_sources/'
+      - '/search.html'
+    max_pages: 2000
+    crawl_delay_seconds: 0.3
+
+  - name: pytorch
+    start_urls:
+      - https://pytorch.org/docs/stable/
+    allowed_domains:
+      - pytorch.org
+    include_patterns:
+      - '^https://pytorch\.org/docs/stable/'
+    exclude_patterns:
+      - '/_sources/'
+      - '/search.html'
+    max_pages: 2000
+    crawl_delay_seconds: 0.3
