@@ -1,6 +1,6 @@
 # pydocs-mcp
 
-Offline Python and ML documentation as an MCP server. This mirrors the layering from the Cupertino project but targets Python, NumPy, Pandas, PyTorch, and other ML libraries.
+Offline Python and ML documentation as an MCP server. This mirrors the layering from the [Cupertino repository](https://github.com/mihaelamj/cupertino) but targets Python, NumPy, Pandas, PyTorch, and other ML libraries.
 
 ## Cupertino architecture notes (from README)
 
