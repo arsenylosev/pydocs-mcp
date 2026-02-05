@@ -60,6 +60,10 @@ Each source supports:
 - `include_patterns` and `exclude_patterns`
 - `max_pages` and `crawl_delay_seconds`
 
+## Expanded ML sources
+
+The default `sources.yaml` now includes a broader set of Python ML libraries pulled from the Python section of the awesome-machine-learning list (core ML, CV, and NLP). The full list is in `src/pydocs_mcp/data/sources.yaml`.
+
 ## MCP tools
 
 - `search_docs(query, limit=10, source=None)`
