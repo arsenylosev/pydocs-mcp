@@ -1,72 +1,254 @@
 # pydocs-mcp
 
-Offline Python and ML documentation as an MCP server. This mirrors the layering from the [Cupertino repository](https://github.com/mihaelamj/cupertino) but targets Python, NumPy, Pandas, PyTorch, and other ML libraries.
+Offline Python documentation as an MCP server. This mirrors the architecture from the [Cupertino repository](https://github.com/mihaelamj/cupertino) but targets Python official documentation (docs.python.org).
 
-## Cupertino architecture notes (from README)
+## What is pydocs-mcp?
 
-Cupertino is organized as a multi-package Swift workspace with clear layers:
+A local, structured, AI-ready documentation system for Python. It:
 
-- **Foundation layer**: shared utilities like MCP support, logging, and shared types.
-- **Infrastructure layer**: core crawling/downloading and search/indexing (SQLite FTS5).
-- **Application layer**: the MCP server and CLI that expose the capabilities.
+- **Downloads** official Python documentation from docs.python.org
+- **Indexes** everything into a fast, searchable SQLite FTS5 database
+- **Serves** documentation to AI agents via the Model Context Protocol
+- **Provides** offline access to Python language and standard library docs
 
-This project keeps the same separation but in Python.
+### Why Build This?
 
-## Python architecture mapping
+- **No more hallucinations**: AI agents get accurate, up-to-date Python documentation
+- **Offline development**: Work with full documentation without internet access
+- **Deterministic search**: Same query always returns same results
+- **Local control**: Own your documentation, inspect the database, script workflows
+- **AI-first design**: Built specifically for AI agent integration via MCP
 
-- **Foundation**: `config.py`, `log.py`, `parser.py` (shared config, logging, HTML to Markdown).
-- **Infrastructure**: `crawler.py` and `storage.py` (fetching + SQLite FTS5 storage).
-- **Application**: `indexer.py` and `search.py` (orchestration and query API).
-- **Interface**: `cli.py` and `mcp_server.py` (CLI + MCP tools).
+## Quick Start
 
-## Quick start (uv)
+### Installation
 
 ```bash
+git clone https://github.com/arsenylosev/pydocs-mcp.git
+cd pydocs-mcp
 uv sync
-uv run pydocs-mcp sources
-uv run pydocs-mcp index --max-pages 200
-uv run pydocs-mcp search "list comprehension"
 ```
 
-Default database path: `~/.pydocs_mcp/docs.db`
-Environment overrides: `PYDOCS_HOME` and `PYDOCS_DB`
+### Setup
 
-## MCP server (offline)
+One-command setup downloads and indexes Python documentation:
 
 ```bash
-uv run pydocs-mcp serve --db ~/.pydocs_mcp/docs.db
+uv run pydocs-mcp setup
 ```
 
-Note: the MCP server runs over stdio, so the command will appear idle while it waits for a client connection.
+Or step by step:
 
-The server only reads the local SQLite database. No network calls are made while serving.
+```bash
+# Download documentation
+uv run pydocs-mcp fetch
 
-### VSCode MCP config
+# Verify index
+uv run pydocs-mcp stats
+```
 
-See `.vscode/mcp.json` and update the `--db` path to your local database. The sample config uses `${env:HOME}` so it should work across machines.
+### Use with Claude Desktop
+
+Edit `~/Library/Application Support/Claude/claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "pydocs": {
+      "command": "uv",
+      "args": ["run", "--directory", "/path/to/pydocs-mcp", "pydocs-mcp", "serve"]
+    }
+  }
+}
+```
+
+### Use with Claude Code
+
+```bash
+claude mcp add pydocs --scope user -- uv run --directory /path/to/pydocs-mcp pydocs-mcp serve
+```
+
+### Use with VS Code (GitHub Copilot)
+
+Add to `.vscode/mcp.json`:
+
+```json
+{
+  "servers": {
+    "pydocs": {
+      "type": "stdio",
+      "command": "uv",
+      "args": ["run", "--directory", "/path/to/pydocs-mcp", "pydocs-mcp", "serve"]
+    }
+  }
+}
+```
+
+## Commands
+
+| Command | Description |
+|---------|-------------|
+| `setup` | Quick setup: download docs and build index |
+| `fetch` | Download documentation from configured sources |
+| `save` | Build or refresh the search index |
+| `serve` | Start MCP server over stdio |
+| `search` | Search the documentation index |
+| `read` | Read a full document by ID or URL |
+| `list-sources` | List configured sources |
+| `stats` | Show database statistics |
+| `packages` | Manage external package documentation |
+
+## External Packages
+
+By default, pydocs-mcp only downloads official Python documentation. You can add external packages (NumPy, Pandas, etc.) via a configuration file.
+
+### Initialize packages config
+
+```bash
+uv run pydocs-mcp packages init
+```
+
+This creates `~/.pydocs_mcp/pydocs-packages.yaml` with sample packages.
+
+### Example packages config
+
+```yaml
+packages:
+  - name: numpy
+    doc_url: https://numpy.org/doc/stable/
+    doc_type: auto
+    max_pages: 2000
+    crawl_delay_seconds: 0.3
+
+  - name: pandas
+    doc_url: https://pandas.pydata.org/docs/
+    doc_type: auto
+    max_pages: 2000
+
+  - name: requests
+    doc_url: https://requests.readthedocs.io/en/latest/
+    doc_type: readthedocs
+    max_pages: 500
+```
+
+### Fetch external packages
+
+```bash
+# Fetch all configured sources + external packages
+uv run pydocs-mcp fetch
+
+# Fetch only a specific package
+uv run pydocs-mcp fetch --source numpy
+```
+
+### Add a package from CLI
+
+```bash
+uv run pydocs-mcp packages add --name flask --url https://flask.palletsprojects.com/
+```
 
 ## Configuration
 
-Default sources live in `src/pydocs_mcp/data/sources.yaml`. You can override with:
+### Environment Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `PYDOCS_HOME` | `~/.pydocs_mcp` | Base directory for data |
+| `PYDOCS_DB` | `~/.pydocs_mcp/docs.db` | SQLite database path |
+| `PYDOCS_PACKAGES` | `~/.pydocs_mcp/pydocs-packages.yaml` | External packages config |
+
+### Custom Sources
+
+For advanced use cases, you can provide a custom sources configuration:
 
 ```bash
-uv run pydocs-mcp index --config /path/to/sources.yaml
+uv run pydocs-mcp fetch --config /path/to/custom-sources.yaml
 ```
 
-Each source supports:
+## Search Examples
 
-- `start_urls`
-- `allowed_domains`
-- `include_patterns` and `exclude_patterns`
-- `max_pages` and `crawl_delay_seconds`
+```bash
+# Search for list comprehensions
+uv run pydocs-mcp search "list comprehension"
 
-## Expanded ML sources
+# Search with text output
+uv run pydocs-mcp search "context manager" --format text
 
-The default `sources.yaml` now includes a broader set of Python ML libraries pulled from the Python section of the awesome-machine-learning list (core ML, CV, and NLP). The full list is in `src/pydocs_mcp/data/sources.yaml`.
+# Search within specific source
+uv run pydocs-mcp search "asyncio" --source python-library
 
-## MCP tools
+# Read a specific document
+uv run pydocs-mcp read --url "https://docs.python.org/3/library/asyncio.html"
+```
 
-- `search_docs(query, limit=10, source=None)`
-- `read_doc(doc_id=None, url=None)`
-- `list_sources()`
-- `get_stats()`
+## Architecture
+
+This project follows the Cupertino architecture pattern:
+
+```
+Foundation Layer:
+  ├─ config.py          # Configuration management
+  ├─ log.py             # Logging infrastructure
+  └─ parser.py          # HTML to Markdown conversion
+
+Infrastructure Layer:
+  ├─ crawler.py         # Web crawling
+  ├─ storage.py         # SQLite FTS5 storage
+  └─ indexer.py         # Document indexing
+
+Application Layer:
+  ├─ search.py          # Search API
+  └─ mcp_server.py      # MCP server implementation
+
+Interface Layer:
+  └─ cli.py             # CLI commands
+```
+
+## Default Sources
+
+Built-in sources (official Python documentation only):
+
+- `python` - Main Python 3 documentation
+- `python-tutorial` - Python tutorial
+- `python-library` - Python standard library
+- `python-reference` - Python language reference
+- `python-howto` - Python HOWTOs
+
+## MCP Tools
+
+- `search_docs(query, limit=10, source=None)` - Full-text search
+- `read_doc(doc_id=None, url=None)` - Read document by ID or URL
+- `list_sources()` - List available sources
+- `get_stats()` - Get database statistics
+
+## Development
+
+```bash
+# Install dependencies
+uv sync
+
+# Run tests
+uv run pytest
+
+# Format code
+uv run ruff format .
+uv run ruff check . --fix
+```
+
+## Differences from Original pydocs-mcp
+
+The original project downloaded many ML libraries (NumPy, Pandas, PyTorch, etc.) by default. This version:
+
+1. **Focuses on Python official docs** - Only docs.python.org by default
+2. **Optional external packages** - ML libraries can be added via config
+3. **Cupertino-style CLI** - Commands organized as setup, fetch, save, serve
+4. **Better source management** - Filter by source, list sources, etc.
+
+## License
+
+MIT License
+
+## Acknowledgments
+
+- Inspired by [Cupertino](https://github.com/mihaelamj/cupertino) for Apple documentation
+- Built with [FastMCP](https://github.com/modelcontextprotocol/python-sdk)

@@ -43,6 +43,12 @@ def create_server(db_path: Path) -> FastMCP:
     @mcp.tool()
     def get_stats() -> dict:
         """Return database statistics."""
-        return store.stats()
+        stats = store.stats()
+        sources = store.list_sources()
+        return {
+            **stats,
+            "sources": sources,
+            "database": str(db_path),
+        }
 
     return mcp

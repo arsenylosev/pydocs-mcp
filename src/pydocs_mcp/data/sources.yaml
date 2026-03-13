@@ -1,15 +1,6 @@
-github_defaults: &github_defaults
-  allowed_domains:
-    - github.com
-  exclude_patterns:
-    - '/issues/'
-    - '/pull/'
-    - '/releases'
-    - '/commits'
-    - '/actions'
-    - '/compare'
-  max_pages: 500
-  crawl_delay_seconds: 0.3
+# Python Official Documentation Sources
+# This file defines the built-in documentation sources for Python itself.
+# For adding external packages, create a pydocs-packages.yaml file in your config directory.
 
 sources:
   - name: python
@@ -23,309 +14,65 @@ sources:
       - '/_sources/'
       - '/genindex.html'
       - '/search.html'
-    max_pages: 2000
-    crawl_delay_seconds: 0.3
+      - '/whatsnew/'  # Skip changelog pages
+      - '/bugs.html'
+      - '/copyright.html'
+    max_pages: 3000
+    crawl_delay_seconds: 0.2
+    user_agent: "pydocs-mcp/0.2 (+https://github.com/arsenylosev/pydocs-mcp)"
 
-  - name: numpy
+  - name: python-tutorial
     start_urls:
-      - https://numpy.org/doc/stable/
+      - https://docs.python.org/3/tutorial/
     allowed_domains:
-      - numpy.org
+      - docs.python.org
     include_patterns:
-      - '^https://numpy\.org/doc/stable/'
+      - '^https://docs\.python\.org/3/tutorial/'
     exclude_patterns:
       - '/_sources/'
       - '/search.html'
-    max_pages: 2000
-    crawl_delay_seconds: 0.3
+    max_pages: 100
+    crawl_delay_seconds: 0.2
+    user_agent: "pydocs-mcp/0.2 (+https://github.com/arsenylosev/pydocs-mcp)"
 
-  - name: pandas
+  - name: python-library
     start_urls:
-      - https://pandas.pydata.org/docs/
+      - https://docs.python.org/3/library/
     allowed_domains:
-      - pandas.pydata.org
+      - docs.python.org
     include_patterns:
-      - '^https://pandas\.pydata\.org/docs/'
-    exclude_patterns:
-      - '/_sources/'
-      - '/search.html'
-    max_pages: 2000
-    crawl_delay_seconds: 0.3
-
-  - name: pytorch
-    start_urls:
-      - https://pytorch.org/docs/stable/
-    allowed_domains:
-      - pytorch.org
-    include_patterns:
-      - '^https://pytorch\.org/docs/stable/'
-    exclude_patterns:
-      - '/_sources/'
-      - '/search.html'
-    max_pages: 2000
-    crawl_delay_seconds: 0.3
-
-  - name: scikit-learn
-    start_urls:
-      - https://scikit-learn.org/
-    allowed_domains:
-      - scikit-learn.org
-    include_patterns:
-      - '^https://scikit-learn\.org/'
-    exclude_patterns:
-      - '/search.html'
-      - '/_sources/'
-    max_pages: 2000
-    crawl_delay_seconds: 0.3
-
-  - name: tensorflow
-    <<: *github_defaults
-    start_urls:
-      - https://github.com/tensorflow/tensorflow/
-    include_patterns:
-      - '^https://github\.com/tensorflow/tensorflow'
-
-  - name: jax
-    <<: *github_defaults
-    start_urls:
-      - https://github.com/google/jax
-    include_patterns:
-      - '^https://github\.com/google/jax'
-
-  - name: xgboost
-    <<: *github_defaults
-    start_urls:
-      - https://github.com/dmlc/xgboost
-    include_patterns:
-      - '^https://github\.com/dmlc/xgboost'
-
-  - name: catboost
-    <<: *github_defaults
-    start_urls:
-      - https://github.com/catboost/catboost
-    include_patterns:
-      - '^https://github\.com/catboost/catboost'
-
-  - name: fastai
-    <<: *github_defaults
-    start_urls:
-      - https://github.com/fastai/fastai
-    include_patterns:
-      - '^https://github\.com/fastai/fastai'
-
-  - name: pytorch-lightning
-    <<: *github_defaults
-    start_urls:
-      - https://github.com/PyTorchLightning/pytorch-lightning
-    include_patterns:
-      - '^https://github\.com/PyTorchLightning/pytorch-lightning'
-
-  - name: optuna
-    <<: *github_defaults
-    start_urls:
-      - https://github.com/optuna/optuna
-    include_patterns:
-      - '^https://github\.com/optuna/optuna'
-
-  - name: imbalanced-learn
-    start_urls:
-      - https://imbalanced-learn.org/stable/
-    allowed_domains:
-      - imbalanced-learn.org
-    include_patterns:
-      - '^https://imbalanced-learn\.org/stable/'
+      - '^https://docs\.python\.org/3/library/'
     exclude_patterns:
       - '/_sources/'
       - '/search.html'
     max_pages: 1500
-    crawl_delay_seconds: 0.3
+    crawl_delay_seconds: 0.2
+    user_agent: "pydocs-mcp/0.2 (+https://github.com/arsenylosev/pydocs-mcp)"
 
-  - name: pyod
-    <<: *github_defaults
+  - name: python-reference
     start_urls:
-      - https://github.com/yzhao062/pyod
-    include_patterns:
-      - '^https://github\.com/yzhao062/pyod'
-
-  - name: river
-    <<: *github_defaults
-    start_urls:
-      - https://github.com/online-ml/river
-    include_patterns:
-      - '^https://github\.com/online-ml/river'
-
-  - name: gensim
-    <<: *github_defaults
-    start_urls:
-      - https://github.com/RaRe-Technologies/gensim
-    include_patterns:
-      - '^https://github\.com/RaRe-Technologies/gensim'
-
-  - name: nltk
-    start_urls:
-      - https://www.nltk.org/
+      - https://docs.python.org/3/reference/
     allowed_domains:
-      - nltk.org
+      - docs.python.org
     include_patterns:
-      - '^https://www\.nltk\.org/'
+      - '^https://docs\.python\.org/3/reference/'
     exclude_patterns:
       - '/_sources/'
       - '/search.html'
-    max_pages: 1500
-    crawl_delay_seconds: 0.3
+    max_pages: 300
+    crawl_delay_seconds: 0.2
+    user_agent: "pydocs-mcp/0.2 (+https://github.com/arsenylosev/pydocs-mcp)"
 
-  - name: spacy
-    <<: *github_defaults
+  - name: python-howto
     start_urls:
-      - https://github.com/explosion/spaCy
-    include_patterns:
-      - '^https://github\.com/explosion/spaCy'
-
-  - name: textblob
-    start_urls:
-      - http://textblob.readthedocs.io/en/dev/
+      - https://docs.python.org/3/howto/
     allowed_domains:
-      - textblob.readthedocs.io
+      - docs.python.org
     include_patterns:
-      - '^http://textblob\.readthedocs\.io/en/dev/'
+      - '^https://docs\.python\.org/3/howto/'
     exclude_patterns:
       - '/_sources/'
       - '/search.html'
-    max_pages: 1000
-    crawl_delay_seconds: 0.3
-
-  - name: transformers
-    <<: *github_defaults
-    start_urls:
-      - https://github.com/huggingface/transformers
-    include_patterns:
-      - '^https://github\.com/huggingface/transformers'
-
-  - name: rasa
-    <<: *github_defaults
-    start_urls:
-      - https://github.com/RasaHQ/rasa
-    include_patterns:
-      - '^https://github\.com/RasaHQ/rasa'
-
-  - name: haystack
-    <<: *github_defaults
-    start_urls:
-      - https://github.com/deepset-ai/haystack
-    include_patterns:
-      - '^https://github\.com/deepset-ai/haystack'
-
-  - name: scikit-image
-    <<: *github_defaults
-    start_urls:
-      - https://github.com/scikit-image/scikit-image
-    include_patterns:
-      - '^https://github\.com/scikit-image/scikit-image'
-
-  - name: scikit-opt
-    <<: *github_defaults
-    start_urls:
-      - https://github.com/guofei9987/scikit-opt
-    include_patterns:
-      - '^https://github\.com/guofei9987/scikit-opt'
-
-  - name: albumentations
-    <<: *github_defaults
-    start_urls:
-      - https://github.com/albu/albumentations
-    include_patterns:
-      - '^https://github\.com/albu/albumentations'
-
-  - name: detectron2
-    <<: *github_defaults
-    start_urls:
-      - https://github.com/facebookresearch/detectron2
-    include_patterns:
-      - '^https://github\.com/facebookresearch/detectron2'
-
-  - name: timm
-    <<: *github_defaults
-    start_urls:
-      - https://github.com/rwightman/pytorch-image-models
-    include_patterns:
-      - '^https://github\.com/rwightman/pytorch-image-models'
-
-  - name: segmentation-models-pytorch
-    <<: *github_defaults
-    start_urls:
-      - https://github.com/qubvel/segmentation_models.pytorch
-    include_patterns:
-      - '^https://github\.com/qubvel/segmentation_models\.pytorch'
-
-  - name: openpose
-    <<: *github_defaults
-    start_urls:
-      - https://github.com/CMU-Perceptual-Computing-Lab/openpose
-    include_patterns:
-      - '^https://github\.com/CMU-Perceptual-Computing-Lab/openpose'
-
-  - name: openface
-    start_urls:
-      - https://cmusatyalab.github.io/openface/
-    allowed_domains:
-      - cmusatyalab.github.io
-    include_patterns:
-      - '^https://cmusatyalab\.github\.io/openface/'
-    max_pages: 500
-    crawl_delay_seconds: 0.3
-
-  - name: face-recognition
-    <<: *github_defaults
-    start_urls:
-      - https://github.com/ageitgey/face_recognition
-    include_patterns:
-      - '^https://github\.com/ageitgey/face_recognition'
-
-  - name: deepface
-    <<: *github_defaults
-    start_urls:
-      - https://github.com/serengil/deepface
-    include_patterns:
-      - '^https://github\.com/serengil/deepface'
-
-  - name: retinaface
-    <<: *github_defaults
-    start_urls:
-      - https://github.com/serengil/retinaface
-    include_patterns:
-      - '^https://github\.com/serengil/retinaface'
-
-  - name: pytesseract
-    <<: *github_defaults
-    start_urls:
-      - https://github.com/madmaze/pytesseract
-    include_patterns:
-      - '^https://github\.com/madmaze/pytesseract'
-
-  - name: imutils
-    <<: *github_defaults
-    start_urls:
-      - https://github.com/jrosebr1/imutils
-    include_patterns:
-      - '^https://github\.com/jrosebr1/imutils'
-
-  - name: mlx
-    <<: *github_defaults
-    start_urls:
-      - https://github.com/ml-explore/mlx
-    include_patterns:
-      - '^https://github\.com/ml-explore/mlx'
-
-  - name: lightly-train
-    <<: *github_defaults
-    start_urls:
-      - https://github.com/lightly-ai/lightly-train
-    include_patterns:
-      - '^https://github\.com/lightly-ai/lightly-train'
-
-  - name: lightly
-    <<: *github_defaults
-    start_urls:
-      - https://github.com/lightly-ai/lightly
-    include_patterns:
-      - '^https://github\.com/lightly-ai/lightly'
+    max_pages: 200
+    crawl_delay_seconds: 0.2
+    user_agent: "pydocs-mcp/0.2 (+https://github.com/arsenylosev/pydocs-mcp)"
